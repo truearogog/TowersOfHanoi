@@ -22,19 +22,19 @@ namespace TowersOfHanoi
 
         public override bool Equals(object obj)
         {
-            HanoiNode node = (HanoiNode)obj;
+            HanoiNode node = obj as HanoiNode;
 
-            if (!this.state.Equals(node.state))
+            if (!state.Equals(node.state))
                 return false;
 
-            if (this.path.Count != node.path.Count)
+            if (path.Count != node.path.Count)
             {
                 return false;
             }
 
-            for (int i = 0; i < this.path.Count; i++)
+            for (int i = 0; i < path.Count; i++)
             {
-                if (!this.path[i].Equals(node.path[i]))
+                if (!path[i].Equals(node.path[i]))
                     return false;
             }
 

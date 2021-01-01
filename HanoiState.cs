@@ -26,8 +26,8 @@ namespace TowersOfHanoi
 
         public HanoiState(HanoiState state, byte from, byte to)
         {
-            this.diskCount = state.diskCount;
-            this.pegCount = state.pegCount;
+            diskCount = state.diskCount;
+            pegCount = state.pegCount;
             //init pegs
             pegs = new Peg[pegCount];
             for (int i = 0; i < pegCount; i++)
@@ -73,10 +73,12 @@ namespace TowersOfHanoi
         public override bool Equals(object obj)
         {
             HanoiState puz = obj as HanoiState;
+
             if (diskCount != puz.diskCount || pegCount != puz.pegCount)
             {
                 return false;
             }
+
             for (int i = 0; i < pegs.Length; i++)
             {
                 if (!pegs[i].Equals(puz.pegs[i]))
@@ -84,6 +86,7 @@ namespace TowersOfHanoi
                     return false;
                 }
             }
+
             return true;
         }
     }
