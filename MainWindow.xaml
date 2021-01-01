@@ -1,0 +1,100 @@
+﻿<Window x:Class="TowersOfHanoi.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TowersOfHanoi" 
+        xmlns:core="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="MainWindow"
+        Height="600"
+        Width="800"
+        Background="AliceBlue"
+        ResizeMode="CanMinimize">
+    
+    <Window.Resources>
+        <core:Double x:Key="margin">20</core:Double>
+        <Style x:Key="HorGridSplitter" TargetType="GridSplitter">
+            <Setter Property="ItemsControl.Height" Value="{StaticResource margin}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Grid.ColumnSpan" Value="5"/>
+            <Setter Property="ItemsControl.IsEnabled" Value="False"/>
+        </Style>
+        <Style x:Key="VerGridSplitter" TargetType="GridSplitter">
+            <Setter Property="ItemsControl.Width" Value="{StaticResource margin}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Grid.RowSpan" Value="3"/>
+            <Setter Property="ItemsControl.IsEnabled" Value="False"/>
+        </Style>
+        <Style x:Key="Text">
+            <Setter Property="ItemsControl.FontSize" Value="22"/>
+            <Setter Property="ItemsControl.VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="Label" BasedOn="{StaticResource Text}" TargetType="Label">
+        </Style>
+        <Style x:Key="NumberTextBox" BasedOn="{StaticResource Text}" TargetType="TextBox">
+            <Setter Property="Width" Value="50"/>
+            <Setter Property="MaxLength" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <EventSetter Event="PreviewTextInput" Handler="NumberTextBoxPreviewInput"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <!--#region GRID DEFINITIONS-->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <!--#endregion-->
+
+        <!--#region GRID CONTENT-->
+        <StackPanel Grid.Row="1" Grid.Column="1" Width="150" Orientation="Vertical">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
+                <Label Content="Discs" Margin="0,0,20,0" Style="{StaticResource Label}"/>
+                <TextBox x:Name="diskCountInputTextBox" TextChanged="PuzzleParametersChanged" Style="{StaticResource NumberTextBox}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
+                <Label Content="Pegs" Margin="0,0,20,0" Style="{StaticResource Label}"/>
+                <TextBox x:Name="pegCountInputTextBox" TextChanged="PuzzleParametersChanged" Style="{StaticResource NumberTextBox}"/>
+            </StackPanel>
+            <Button x:Name="startSolveButton" Click="StartSolveButton_Clicked" Margin="0,0,0,10">
+                <TextBlock Text="Start" Style="{StaticResource Text}" TextWrapping="Wrap"/>
+            </Button>
+            <Button x:Name="abortSolveButton" Click="AbortSolveButton_Click" Margin="0,0,0,10">
+                <TextBlock Text="Abort" Style="{StaticResource Text}" TextWrapping="Wrap"/>
+            </Button>
+            <Label x:Name="FSmoveCountLabel" Content="- moves" HorizontalContentAlignment="Center" Style="{StaticResource Text}" Margin="0,0,0,10"/>
+            <Label x:Name="BFSmoveCountLabel" Content="- moves" HorizontalContentAlignment="Center" Style="{StaticResource Text}" Margin="0,0,0,10"/>
+            <Button x:Name="startVisualizationButton" Click="StartVisualizationButton_Click" Margin="0,0,0,10">
+                <TextBlock Text="Start vis" Style="{StaticResource Text}" TextWrapping="Wrap"/>
+            </Button>
+            <Button x:Name="abortVisualizationButton" Click="AbortVisualizationButton_Click" Margin="0,0,0,10">
+                <TextBlock Text="Abort vis" Style="{StaticResource Text}" TextWrapping="Wrap"/>
+            </Button>
+            <Button x:Name="resetVisualizationButton" Click="ResetVisualizationButton_Click" Margin="0,0,0,10">
+                <TextBlock Text="Reset vis" Style="{StaticResource Text}" TextWrapping="Wrap"/>
+            </Button>
+        </StackPanel>
+
+        <Canvas x:Name="canvas" Grid.Row="1" Grid.Column="3" Background="White"/>
+        <!--#endregion-->
+
+        <!--#region GRID SPLITTERS-->
+        <GridSplitter Grid.Row="0" Style="{StaticResource HorGridSplitter}"/>
+        <GridSplitter Grid.Row="2" Style="{StaticResource HorGridSplitter}"/>
+        
+        <GridSplitter Grid.Column="0" Style="{StaticResource VerGridSplitter}"/>
+        <GridSplitter Grid.Column="2" Style="{StaticResource VerGridSplitter}"/>
+        <GridSplitter Grid.Column="4" Style="{StaticResource VerGridSplitter}"/>
+        <!--#endregion-->
+    </Grid>
+</Window>
