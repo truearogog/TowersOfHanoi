@@ -5,6 +5,18 @@ using System.Windows.Media;
 
 namespace TowersOfHanoi
 {
+    struct Move
+    {
+        public byte from;
+        public byte to;
+
+        public Move(byte from, byte to)
+        {
+            this.from = from;
+            this.to = to;
+        }
+    }
+
     static class Essentials
     {
         public static double Lerp(double from, double to, double amount)

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Move = System.Tuple<byte, byte>;
 
 namespace TowersOfHanoi
 {
@@ -8,16 +7,10 @@ namespace TowersOfHanoi
         public List<Move> path;
         public HanoiState state;
 
-        public HanoiNode(HanoiState state)
+        public HanoiNode(HanoiState state, List<Move> path = null)
         {
-            path = new List<Move>();
             this.state = state;
-        }
-
-        public HanoiNode(HanoiNode node, HanoiState state)
-        {
-            path = new List<Move>(node.path);
-            this.state = state;
+            this.path = path != null ? path : new List<Move>();
         }
 
         public override bool Equals(object obj)
