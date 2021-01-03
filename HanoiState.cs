@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Move = System.Tuple<byte, byte>;
 
 namespace TowersOfHanoi
 {
@@ -12,7 +11,7 @@ namespace TowersOfHanoi
 
         private Peg[] pegs;
 
-        public HanoiState(byte diskCount, byte pegCount, int fullPeg)
+        public HanoiState(byte diskCount, byte pegCount, byte fullPeg)
         {
             this.diskCount = diskCount;
             this.pegCount = pegCount;
@@ -23,8 +22,8 @@ namespace TowersOfHanoi
                 pegs[i] = new Peg(diskCount, i == fullPeg);
             }
         }
-
-        public HanoiState(HanoiState state, byte from, byte to)
+            
+        public HanoiState(HanoiState state, Move move)
         {
             this.diskCount = state.diskCount;
             this.pegCount = state.pegCount;
@@ -34,7 +33,7 @@ namespace TowersOfHanoi
             {
                 pegs[i] = new Peg(state.pegs[i]);
             }
-            pegs[to].Push(pegs[from].Pop());
+            pegs[move.to].Push(pegs[move.from].Pop());
         }
 
         public bool CanMove(byte from, byte to)
@@ -52,7 +51,7 @@ namespace TowersOfHanoi
                     if (i == j)
                         continue;
                     if (CanMove(i, j))
-                        possibleMoves.Add(Tuple.Create(i, j));
+                        possibleMoves.Add(new Move(i, j));
                 }
             }
             return possibleMoves;
