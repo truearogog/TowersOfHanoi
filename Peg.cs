@@ -7,15 +7,15 @@ namespace TowersOfHanoi
         private Stack<byte> disks;
         private byte maxDiskCount;
 
-        public Peg(byte maxDiscCount, bool containsDisks = false)
+        public Peg(byte maxDiskCount, bool containsDisks = false)
         {
             disks = new Stack<byte>();
-            maxDiskCount = maxDiscCount;
+            this.maxDiskCount = maxDiskCount;
             if (containsDisks)
             {
-                for (byte i = 0; i < maxDiscCount; i++)
+                for (byte i = 0; i < maxDiskCount; i++)
                 {
-                    disks.Push((byte)(maxDiscCount - i));
+                    disks.Push((byte)(maxDiskCount - i));
                 }
             }
         }

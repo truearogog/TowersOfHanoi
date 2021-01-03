@@ -25,8 +25,8 @@ namespace TowersOfHanoi
             
         public HanoiState(HanoiState state, Move move)
         {
-            this.diskCount = state.diskCount;
-            this.pegCount = state.pegCount;
+            diskCount = state.diskCount;
+            pegCount = state.pegCount;
             //init pegs
             pegs = new Peg[pegCount];
             for (int i = 0; i < pegCount; i++)

@@ -31,15 +31,11 @@ namespace TowersOfHanoi
 
                 List<Move> possibleMoves = node.state.GetPossibleMoves();
 
-                HanoiState possibleState;
-                HanoiNode possibleNode;
-
                 foreach (Move possibleMove in possibleMoves)
                 {
-                    possibleState = new HanoiState(node.state, possibleMove);
-                    possibleNode = new HanoiNode(possibleState, node.path);
+                    HanoiState possibleState = new HanoiState(node.state, possibleMove);
+                    HanoiNode possibleNode = new HanoiNode(possibleState, node.path);
                     possibleNode.path.Add(possibleMove);
-
                     if (!visitedStates.Contains(possibleState))
                     {
                         if (endState.Equals(possibleState))

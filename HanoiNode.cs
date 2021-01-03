@@ -10,7 +10,7 @@ namespace TowersOfHanoi
         public HanoiNode(HanoiState state, List<Move> path = null)
         {
             this.state = state;
-            this.path = path != null ? path : new List<Move>();
+            this.path = path != null ? new List<Move>(path) : new List<Move>();
         }
 
         public override bool Equals(object obj)
