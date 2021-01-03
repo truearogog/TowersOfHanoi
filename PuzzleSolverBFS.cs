@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using Move = System.Tuple<byte, byte>;
 
 namespace TowersOfHanoi
 {
@@ -36,8 +37,8 @@ namespace TowersOfHanoi
 
                 foreach (Move possibleMove in possibleMoves)
                 {
-                    possibleState = new HanoiState(node.state, possibleMove);
-                    possibleNode = new HanoiNode(possibleState, node.path);
+                    possibleState = new HanoiState(node.state, possibleMove.Item1, possibleMove.Item2);
+                    possibleNode = new HanoiNode(node, possibleState);
                     possibleNode.path.Add(possibleMove);
 
                     if (!visitedStates.Contains(possibleState))

@@ -5,12 +5,12 @@ namespace TowersOfHanoi
     class Peg
     {
         private Stack<byte> disks;
-        private byte maxDiskCount;
+        private byte maxDiscCount;
 
         public Peg(byte maxDiscCount, bool containsDisks = false)
         {
             disks = new Stack<byte>();
-            maxDiskCount = maxDiscCount;
+            this.maxDiscCount = maxDiscCount;
             if (containsDisks)
             {
                 for (byte i = 0; i < maxDiscCount; i++)
@@ -22,13 +22,18 @@ namespace TowersOfHanoi
 
         public Peg(Peg peg)
         {
-            maxDiskCount = peg.maxDiskCount;
+            maxDiscCount = peg.maxDiscCount;
             disks = new Stack<byte>(new Stack<byte>(peg.disks));
+        }
+
+        public bool CanPush()
+        {
+            return disks.Count < maxDiscCount;
         }
 
         public bool CanPush(byte diskSize)
         {
-            return (disks.Count > 0) ? (disks.Count + 1 <= maxDiskCount) ? disks.Peek() > diskSize : false : (disks.Count + 1 <= maxDiskCount);
+            return (disks.Count > 0) ? (disks.Count + 1 <= maxDiscCount) ? disks.Peek() > diskSize : false : (disks.Count + 1 <= maxDiscCount);
         }
 
         public void Push(byte diskSize)

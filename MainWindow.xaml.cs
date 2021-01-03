@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Move = System.Tuple<byte, byte>;
 
 namespace TowersOfHanoi
 {
@@ -75,7 +76,7 @@ namespace TowersOfHanoi
                 return;
             }
             startState = new HanoiState(diskCount, pegCount, 0);
-            endState = new HanoiState(diskCount, pegCount, (byte)(pegCount - 1));
+            endState = new HanoiState(diskCount, pegCount, pegCount - 1);
             puzzleVisualizer.Init(startState, canvas);
             BFSmoveCountLabel.Content = $"- moves";
             FSmoveCountLabel.Content = $"- moves";
@@ -88,7 +89,7 @@ namespace TowersOfHanoi
             List<Move> solutionPath = puzzleSolver.GetSolution();
             byte counter = 1;
             Console.WriteLine("Solution : ");
-            solutionPath.ForEach(move => { Console.WriteLine($"{move.from} --> {move.to}  [{counter++}]"); });
+            solutionPath.ForEach(move => { Console.WriteLine($"{move.Item1} --> {move.Item2}  [{counter++}]"); });
         }
 
         private void ChangeFrameworkElementState(params FrameworkElement[] frameworkElements)

@@ -4,6 +4,7 @@ using System.Windows.Shapes;
 using System.Windows.Controls;
 using System.Threading;
 using System.Collections.Generic;
+using Move = System.Tuple<byte, byte>;
 using System.Threading.Tasks;
 
 namespace TowersOfHanoi
@@ -108,10 +109,8 @@ namespace TowersOfHanoi
                     token.ThrowIfCancellationRequested();
                 }
                 Thread.Sleep(300);
-                if (currentState.CanMove(move.from, move.to))
-                {
-                    currentState = new HanoiState(currentState, move);
-                }
+                if (currentState.CanMove(move.Item1, move.Item2))
+                    currentState = new HanoiState(currentState, move.Item1, move.Item2);
                 VisualizeCurrentState();
             });
         }
