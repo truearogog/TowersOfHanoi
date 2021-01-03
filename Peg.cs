@@ -63,22 +63,17 @@ namespace TowersOfHanoi
 
         public override bool Equals(object obj)
         {
-            Peg otherPeg = obj as Peg;
-
-            List<byte> disks1 = new List<byte>(disks);
-            List<byte> disks2 = new List<byte>(otherPeg.disks);
-
+            List<byte> disks1 = new List<byte>(this.disks);
+            List<byte> disks2 = new List<byte>((obj as Peg).disks);
             if (disks1.Count != disks2.Count)
             {
                 return false;
             }
-
             for (int i = 0; i < disks1.Count; i++)
             {
                 if (!disks1[i].Equals(disks2[i]))
                     return false;
             }
-
             return true;
         }
     }

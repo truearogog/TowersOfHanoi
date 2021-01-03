@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -19,12 +20,13 @@ namespace TowersOfHanoi
         public MainWindow()
         {
             InitializeComponent();
-            ChangeFrameworkElementState(false, startSolveButton, abortSolveButton, startVisualizationButton, abortVisualizationButton, resetVisualizationButton);
+            ChangeFrameworkElementState(true, startSolveButton);
+            ChangeFrameworkElementState(false, abortSolveButton, startVisualizationButton, abortVisualizationButton, resetVisualizationButton);
         }
 
         private void NumberTextBoxPreviewInput(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^3-9]+");
+            Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 
