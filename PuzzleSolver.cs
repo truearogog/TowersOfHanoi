@@ -8,6 +8,9 @@ namespace TowersOfHanoi
     abstract class PuzzleSolver
     {
         private List<Move> solution;
+        public List<Move> Solution { get { return new List<Move>(solution); } }
+        public TimeSpan ElapsedTime { private set; get; }
+        public long VisitedStates { protected set; get; }
         private CancellationTokenSource tokenSource = null;
 
         public async void Start(HanoiState startState, HanoiState endState, Action completedAction = null)
@@ -26,8 +29,10 @@ namespace TowersOfHanoi
                     solution = SolveThread(startState, endState, token);
 
                     DateTime endTime = DateTime.Now;
+                    ElapsedTime = endTime - startTime;
                     Console.WriteLine($"{solution.Count} moves");
-                    Console.WriteLine($"{endTime - startTime} elapsed");
+                    Console.WriteLine($"{ElapsedTime} elapsed");
+                    Console.WriteLine($"Visited {VisitedStates} states");
                     Console.WriteLine("------------------------------");
 
                     completedAction?.Invoke();
@@ -50,11 +55,6 @@ namespace TowersOfHanoi
         {
             tokenSource.Cancel();
             stoppedAction?.Invoke();
-        }
-
-        public List<Move> GetSolution()
-        {
-            return new List<Move>(solution);
         }
     }
 }

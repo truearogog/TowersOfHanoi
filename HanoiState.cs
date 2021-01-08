@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace TowersOfHanoi
@@ -11,6 +12,8 @@ namespace TowersOfHanoi
 
         private Peg[] pegs;
 
+        public byte[] identifier { private set; get; }
+
         public HanoiState(byte diskCount, byte pegCount, byte fullPeg)
         {
             this.diskCount = diskCount;
@@ -21,6 +24,7 @@ namespace TowersOfHanoi
             {
                 pegs[i] = new Peg(diskCount, i == fullPeg);
             }
+            InitIdentifier();
         }
             
         public HanoiState(HanoiState state, Move move)
@@ -34,6 +38,20 @@ namespace TowersOfHanoi
                 pegs[i] = new Peg(state.pegs[i]);
             }
             pegs[move.to].Push(pegs[move.from].Pop());
+            InitIdentifier();
+        }
+
+        private void InitIdentifier()
+        {
+            identifier = new byte[diskCount];
+            for (byte i = 0; i < pegCount; ++i)
+            {
+                List<byte> disks = pegs[i].GetDisks();
+                foreach (byte disk in disks)
+                {
+                    identifier[disk - 1] = i;
+                }
+            }
         }
 
         public bool CanMove(byte from, byte to)
@@ -71,19 +89,8 @@ namespace TowersOfHanoi
 
         public override bool Equals(object obj)
         {
-            HanoiState puz = obj as HanoiState;
-            if (diskCount != puz.diskCount || pegCount != puz.pegCount)
-            {
-                return false;
-            }
-            for (int i = 0; i < pegs.Length; i++)
-            {
-                if (!pegs[i].Equals(puz.pegs[i]))
-                {
-                    return false;
-                }
-            }
-            return true;
+            HanoiState otherState = obj as HanoiState;
+            return Enumerable.SequenceEqual(identifier, otherState.identifier);
         }
     }
 }

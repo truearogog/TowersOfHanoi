@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TowersOfHanoi" 
         xmlns:core="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="MainWindow"
+        Title="Tower of Hanoi"
         Height="600"
         Width="800"
         Background="AliceBlue"
@@ -59,7 +59,7 @@
         <!--#region GRID CONTENT-->
         <StackPanel Grid.Row="1" Grid.Column="1" Width="150" Orientation="Vertical">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
-                <Label Content="Discs" Margin="0,0,20,0" Style="{StaticResource Label}"/>
+                <Label Content="Disks" Margin="0,0,20,0" Style="{StaticResource Label}"/>
                 <TextBox x:Name="diskCountInputTextBox" TextChanged="PuzzleParametersChanged" Style="{StaticResource NumberTextBox}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
@@ -72,8 +72,11 @@
             <Button x:Name="abortSolveButton" Click="AbortSolveButton_Click" Margin="0,0,0,10">
                 <TextBlock Text="Abort" Style="{StaticResource Text}" TextWrapping="Wrap"/>
             </Button>
-            <Label x:Name="FSmoveCountLabel" Content="- moves" HorizontalContentAlignment="Center" Style="{StaticResource Text}" Margin="0,0,0,10"/>
-            <Label x:Name="BFSmoveCountLabel" Content="- moves" HorizontalContentAlignment="Center" Style="{StaticResource Text}" Margin="0,0,0,10"/>
+
+            <TextBlock x:Name="FSmoveCountLabel" Text="Frame Stewart: - moves" TextWrapping="Wrap" Style="{StaticResource Text}" Margin="0,0,0,10"/>
+            <TextBlock x:Name="BFSmoveCountLabel" Text="BFS: - moves" TextWrapping="Wrap" Style="{StaticResource Text}" Margin="0,0,0,10"/>
+            <TextBlock x:Name="elapsedTimeLabel" Text="Elapsed time:   -" TextWrapping="Wrap" Style="{StaticResource Text}" Margin="0,0,0,10"/>
+            
             <Button x:Name="startVisualizationButton" Click="StartVisualizationButton_Click" Margin="0,0,0,10">
                 <TextBlock Text="Start vis" Style="{StaticResource Text}" TextWrapping="Wrap"/>
             </Button>

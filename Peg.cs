@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace TowersOfHanoi
 {
@@ -56,6 +57,11 @@ namespace TowersOfHanoi
             return (byte)disks.Count;
         }
 
+        public List<byte> GetDisks()
+        {
+            return new List<byte>(disks);
+        }
+
         public override string ToString()
         {
             return $"[{string.Join(", ", disks)}]";
@@ -63,18 +69,8 @@ namespace TowersOfHanoi
 
         public override bool Equals(object obj)
         {
-            List<byte> disks1 = new List<byte>(this.disks);
-            List<byte> disks2 = new List<byte>((obj as Peg).disks);
-            if (disks1.Count != disks2.Count)
-            {
-                return false;
-            }
-            for (int i = 0; i < disks1.Count; i++)
-            {
-                if (!disks1[i].Equals(disks2[i]))
-                    return false;
-            }
-            return true;
+            Peg otherPeg = obj as Peg;
+            return Enumerable.SequenceEqual(disks, otherPeg.disks);
         }
     }
 }

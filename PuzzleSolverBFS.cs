@@ -24,7 +24,7 @@ namespace TowersOfHanoi
 
                 if (visitedStates.Contains(node.state))
                 {
-                    continue;
+                    continue;   
                 }
 
                 visitedStates.Add(node.state);
@@ -47,7 +47,9 @@ namespace TowersOfHanoi
                     }
                 }
             }
+
             bfsEnd: { }
+            VisitedStates = visitedStates.Count;
             return new List<Move>(endNode.path);
         }
     }

@@ -35,7 +35,7 @@ namespace TowersOfHanoi
                 return;
 
             uint fsmovecount = FrameStewart.Hanoi(startState.diskCount, startState.pegCount);
-            FSmoveCountLabel.Content = $"{fsmovecount} moves";
+            FSmoveCountLabel.Text = $"Frame Stewart: {fsmovecount} moves";
             puzzleSolver = new PuzzleSolverBFS();
 
             Action solvingCompleted = () => {
@@ -44,7 +44,9 @@ namespace TowersOfHanoi
 
                 Dispatcher.Invoke(() =>
                 {
-                    BFSmoveCountLabel.Content = $"{puzzleSolver.GetSolution().Count} moves";
+                    BFSmoveCountLabel.Text = $"BFS: {puzzleSolver.Solution.Count} moves";
+                    string elapsedTime = puzzleSolver.ElapsedTime.ToString();
+                    elapsedTimeLabel.Text = $"Elapsed time:   {elapsedTime.Substring(3, Math.Min(13, elapsedTime.Length - 3))}";
                 });
             };
 
@@ -76,15 +78,16 @@ namespace TowersOfHanoi
             startState = new HanoiState(diskCount, pegCount, 0);
             endState = new HanoiState(diskCount, pegCount, (byte)(pegCount - 1));
             puzzleVisualizer.Init(startState, canvas);
-            BFSmoveCountLabel.Content = $"- moves";
-            FSmoveCountLabel.Content = $"- moves";
+            FSmoveCountLabel.Text = $"Frame Stewart: - moves";
+            BFSmoveCountLabel.Text = $"BFS: - moves";
+            elapsedTimeLabel.Text = $"Elapsed time:   -";
             ChangeFrameworkElementState(true, startSolveButton);
             ChangeFrameworkElementState(false, abortSolveButton, startVisualizationButton, abortVisualizationButton, resetVisualizationButton);
         }
 
         private void PrintMoves(PuzzleSolver puzzleSolver)
         {
-            List<Move> solutionPath = puzzleSolver.GetSolution();
+            List<Move> solutionPath = puzzleSolver.Solution;
             byte counter = 1;
             Console.WriteLine("Solution : ");
             solutionPath.ForEach(move => { Console.WriteLine($"{move.from} --> {move.to}  [{counter++}]"); });
@@ -114,7 +117,7 @@ namespace TowersOfHanoi
             };
             if (puzzleVisualizer.StateEquals(startState))
             {
-                puzzleVisualizer?.Start(puzzleSolver.GetSolution(), visualizationCompleted);
+                puzzleVisualizer?.Start(puzzleSolver.Solution, visualizationCompleted);
             }
             ChangeFrameworkElementState(true, abortVisualizationButton);
             ChangeFrameworkElementState(false, startSolveButton, startVisualizationButton, resetVisualizationButton, diskCountInputTextBox, pegCountInputTextBox);

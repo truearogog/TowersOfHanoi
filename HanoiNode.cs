@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace TowersOfHanoi
 {
@@ -15,23 +16,14 @@ namespace TowersOfHanoi
 
         public override bool Equals(object obj)
         {
-            HanoiNode node = (HanoiNode)obj;
+            HanoiNode otherNode = obj as HanoiNode;
 
-            if (!this.state.Equals(node.state))
-                return false;
-
-            if (this.path.Count != node.path.Count)
+            if (!state.Equals(otherNode.state))
             {
                 return false;
             }
 
-            for (int i = 0; i < this.path.Count; i++)
-            {
-                if (!this.path[i].Equals(node.path[i]))
-                    return false;
-            }
-
-            return true;
+            return Enumerable.SequenceEqual(path, otherNode.path);
         }
     }
 }
