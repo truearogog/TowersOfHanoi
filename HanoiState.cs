@@ -12,7 +12,7 @@ namespace TowersOfHanoi
 
         private Peg[] pegs;
 
-        public byte[] identifier { private set; get; }
+        public long identifier { private set; get; }
 
         public HanoiState(byte diskCount, byte pegCount, byte fullPeg)
         {
@@ -43,13 +43,13 @@ namespace TowersOfHanoi
 
         private void InitIdentifier()
         {
-            identifier = new byte[diskCount];
+            identifier = 0;
             for (byte i = 0; i < pegCount; ++i)
             {
                 List<byte> disks = pegs[i].GetDisks();
                 foreach (byte disk in disks)
                 {
-                    identifier[disk - 1] = i;
+                    identifier += (long)Math.Pow(10, disk - 1) * i;
                 }
             }
         }
@@ -90,7 +90,7 @@ namespace TowersOfHanoi
         public override bool Equals(object obj)
         {
             HanoiState otherState = obj as HanoiState;
-            return Enumerable.SequenceEqual(identifier, otherState.identifier);
+            return identifier == otherState.identifier;
         }
     }
 }

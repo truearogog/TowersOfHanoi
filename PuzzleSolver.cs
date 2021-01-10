@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace TowersOfHanoi
 {
@@ -12,8 +13,14 @@ namespace TowersOfHanoi
         public TimeSpan ElapsedTime { private set; get; }
         public long VisitedStates { protected set; get; }
         private CancellationTokenSource tokenSource = null;
+        private MainWindow mainWindow;
 
-        public async void Start(HanoiState startState, HanoiState endState, Action completedAction = null)
+        public PuzzleSolver()
+        {
+            mainWindow = Application.Current.MainWindow as MainWindow;
+        }
+
+        public async void Start(HanoiState startState, HanoiState endState, Action completedAction, Action abortedAction)
         {
             tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
@@ -22,25 +29,15 @@ namespace TowersOfHanoi
             {
                 try
                 {
-                    Console.WriteLine("------------------------------");
-                    Console.WriteLine("Starting to solve...");
                     DateTime startTime = DateTime.Now;
-
                     solution = SolveThread(startState, endState, token);
-
                     DateTime endTime = DateTime.Now;
                     ElapsedTime = endTime - startTime;
-                    Console.WriteLine($"{solution.Count} moves");
-                    Console.WriteLine($"{ElapsedTime} elapsed");
-                    Console.WriteLine($"Visited {VisitedStates} states");
-                    Console.WriteLine("------------------------------");
-
                     completedAction?.Invoke();
                 }
                 catch (OperationCanceledException)
                 {
-                    Console.WriteLine("Aborted");
-                    Console.WriteLine("------------------------------");
+                    abortedAction?.Invoke();
                 }
                 finally
                 {

@@ -8,16 +8,16 @@
         mc:Ignorable="d"
         Title="Tower of Hanoi"
         Height="600"
-        Width="800"
+        Width="1000"
         Background="AliceBlue"
         ResizeMode="CanMinimize">
     
     <Window.Resources>
-        <core:Double x:Key="margin">20</core:Double>
+        <core:Double x:Key="margin">10</core:Double>
         <Style x:Key="HorGridSplitter" TargetType="GridSplitter">
             <Setter Property="ItemsControl.Height" Value="{StaticResource margin}"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Grid.ColumnSpan" Value="5"/>
+            <Setter Property="Grid.ColumnSpan" Value="7"/>
             <Setter Property="ItemsControl.IsEnabled" Value="False"/>
         </Style>
         <Style x:Key="VerGridSplitter" TargetType="GridSplitter">
@@ -52,6 +52,8 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <!--#endregion-->
@@ -89,6 +91,9 @@
         </StackPanel>
 
         <Canvas x:Name="canvas" Grid.Row="1" Grid.Column="3" Background="White"/>
+
+        <RichTextBox x:Name="consoleTextBox" Grid.Row="1" Grid.Column="5" Width="190" IsReadOnly="True" VerticalScrollBarVisibility="Visible">
+        </RichTextBox>
         <!--#endregion-->
 
         <!--#region GRID SPLITTERS-->
@@ -98,6 +103,7 @@
         <GridSplitter Grid.Column="0" Style="{StaticResource VerGridSplitter}"/>
         <GridSplitter Grid.Column="2" Style="{StaticResource VerGridSplitter}"/>
         <GridSplitter Grid.Column="4" Style="{StaticResource VerGridSplitter}"/>
+        <GridSplitter Grid.Column="6" Style="{StaticResource VerGridSplitter}"/>
         <!--#endregion-->
     </Grid>
 </Window>

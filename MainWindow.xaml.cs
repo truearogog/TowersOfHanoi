@@ -25,7 +25,7 @@ namespace TowersOfHanoi
 
         private void NumberTextBoxPreviewInput(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^0-9]+");
+            Regex regex = new Regex("[^3-9]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 
@@ -47,10 +47,21 @@ namespace TowersOfHanoi
                     BFSmoveCountLabel.Text = $"BFS: {puzzleSolver.Solution.Count} moves";
                     string elapsedTime = puzzleSolver.ElapsedTime.ToString();
                     elapsedTimeLabel.Text = $"Elapsed time:   {elapsedTime.Substring(3, Math.Min(13, elapsedTime.Length - 3))}";
+                    Print($"{puzzleSolver.Solution.Count} moves\r");
+                    Print($"{puzzleSolver.ElapsedTime} elapsed\r");
+                    Print($"Visited {puzzleSolver.VisitedStates} states\r");
+                    PrintMoves(puzzleSolver);
+                    Print("===================\r");
                 });
             };
 
-            puzzleSolver.Start(startState, endState, solvingCompleted);
+            Action solvingAborted = () => {
+                Print("Aborted\r");
+                Print("===================\r");
+            };
+
+            Print("Starting to solve...\r");
+            puzzleSolver.Start(startState, endState, solvingCompleted, solvingAborted);
 
             ChangeFrameworkElementState(true, abortSolveButton);
             ChangeFrameworkElementState(false, startSolveButton, startVisualizationButton, abortVisualizationButton, resetVisualizationButton, diskCountInputTextBox, pegCountInputTextBox);
@@ -89,24 +100,8 @@ namespace TowersOfHanoi
         {
             List<Move> solutionPath = puzzleSolver.Solution;
             byte counter = 1;
-            Console.WriteLine("Solution : ");
-            solutionPath.ForEach(move => { Console.WriteLine($"{move.from} --> {move.to}  [{counter++}]"); });
-        }
-
-        private void ChangeFrameworkElementState(params FrameworkElement[] frameworkElements)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                Array.ForEach(frameworkElements, frameworkElement => frameworkElement.IsEnabled = !frameworkElement.IsEnabled);
-            });
-        }
-
-        private void ChangeFrameworkElementState(bool state, params FrameworkElement[] frameworkElements)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                Array.ForEach(frameworkElements, frameworkElement => frameworkElement.IsEnabled = state);
-            });
+            Print("Solution:\r");
+            solutionPath.ForEach(move => { Print($"{move.from} --> {move.to}  [{counter++}]\r"); });
         }
 
         private void StartVisualizationButton_Click(object sender, RoutedEventArgs e)
@@ -137,6 +132,27 @@ namespace TowersOfHanoi
             puzzleVisualizer.Init(startState, canvas);
             ChangeFrameworkElementState(true, startVisualizationButton);
             ChangeFrameworkElementState(false, resetVisualizationButton);
+        }
+
+        public void Print(string message)
+        {
+            consoleTextBox.AppendText(message);
+        }
+
+        private void ChangeFrameworkElementState(params FrameworkElement[] frameworkElements)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                Array.ForEach(frameworkElements, frameworkElement => frameworkElement.IsEnabled = !frameworkElement.IsEnabled);
+            });
+        }
+
+        private void ChangeFrameworkElementState(bool state, params FrameworkElement[] frameworkElements)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                Array.ForEach(frameworkElements, frameworkElement => frameworkElement.IsEnabled = state);
+            });
         }
     }
 }
