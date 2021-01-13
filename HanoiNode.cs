@@ -1,29 +1,25 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace TowersOfHanoi
+﻿namespace TowersOfHanoi
 {
     class HanoiNode
     {
-        public List<Move> path;
-        public HanoiState state;
+        public ulong state;
+        public HanoiNode parent = null;
 
-        public HanoiNode(HanoiState state, List<Move> path = null)
+        public HanoiNode(ulong state)
         {
             this.state = state;
-            this.path = path != null ? new List<Move>(path) : new List<Move>();
+        }
+
+        public HanoiNode(ulong state, ref HanoiNode parent)
+        {
+            this.state = state;
+            this.parent = parent;
         }
 
         public override bool Equals(object obj)
         {
             HanoiNode otherNode = obj as HanoiNode;
-
-            if (!state.Equals(otherNode.state))
-            {
-                return false;
-            }
-
-            return Enumerable.SequenceEqual(path, otherNode.path);
+            return state == otherNode.state;
         }
     }
 }

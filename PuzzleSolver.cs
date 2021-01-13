@@ -1,26 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace TowersOfHanoi
 {
     abstract class PuzzleSolver
     {
-        private List<Move> solution;
-        public List<Move> Solution { get { return new List<Move>(solution); } }
+        public enum SearchType { BFS, AStar }
         public TimeSpan ElapsedTime { private set; get; }
         public long VisitedStates { protected set; get; }
         private CancellationTokenSource tokenSource = null;
-        private MainWindow mainWindow;
+        public HanoiNode endNode;
+        protected byte diskCount;
+        protected byte pegCount;
+        protected ulong startState = 0;
+        protected ulong endState = 0;
 
-        public PuzzleSolver()
+        public PuzzleSolver(byte diskCount, byte pegCount)
         {
-            mainWindow = Application.Current.MainWindow as MainWindow;
+            this.diskCount = diskCount;
+            this.pegCount = pegCount;
+            //create endState
+            ulong m = 1;
+            for (byte i = 0; i < diskCount; ++i)
+            {
+                endState += m * (byte)(pegCount - 1);
+                m *= 10;
+            }
         }
 
-        public async void Start(HanoiState startState, HanoiState endState, Action completedAction, Action abortedAction)
+        public async void Start(Action completedAction, Action abortedAction)
         {
             tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
@@ -30,7 +39,7 @@ namespace TowersOfHanoi
                 try
                 {
                     DateTime startTime = DateTime.Now;
-                    solution = SolveThread(startState, endState, token);
+                    SolveThread(token);
                     DateTime endTime = DateTime.Now;
                     ElapsedTime = endTime - startTime;
                     completedAction?.Invoke();
@@ -46,7 +55,7 @@ namespace TowersOfHanoi
             });
         }
 
-        protected abstract List<Move> SolveThread(HanoiState startState, HanoiState endState, CancellationToken token);
+        protected abstract void SolveThread(CancellationToken token);
 
         public void Abort(Action stoppedAction = null)
         {

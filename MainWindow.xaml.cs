@@ -9,12 +9,13 @@ namespace TowersOfHanoi
 {
     public partial class MainWindow : Window
     {
-        private byte diskCount;
-        private byte pegCount;
-        private HanoiState startState;
-        private HanoiState endState;
+        private PuzzleSolver.SearchType searchType = PuzzleSolver.SearchType.BFS;
+        private List<Move> solution;
+        private bool canStartSolving = false;
+        private byte diskCount = 3;
+        private byte pegCount = 3;
         private PuzzleSolver puzzleSolver;
-        private PuzzleVisualizer puzzleVisualizer = new PuzzleVisualizer();
+        private PuzzleVisualizer puzzleVisualizer;
 
         public MainWindow()
         {
@@ -25,51 +26,66 @@ namespace TowersOfHanoi
 
         private void NumberTextBoxPreviewInput(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^3-9]+");
+            Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 
         private void StartSolveButton_Clicked(object sender, RoutedEventArgs e)
         {
-            if (startState == null || endState == null)
-                return;
-
-            uint fsmovecount = FrameStewart.Hanoi(startState.diskCount, startState.pegCount);
+            uint fsmovecount = FrameStewart.Hanoi(diskCount, pegCount);
             FSmoveCountLabel.Text = $"Frame Stewart: {fsmovecount} moves";
-            puzzleSolver = new PuzzleSolverBFS();
-
+            
             Action solvingCompleted = () => {
                 ChangeFrameworkElementState(true, startVisualizationButton, diskCountInputTextBox, pegCountInputTextBox);
                 ChangeFrameworkElementState(false, abortSolveButton);
 
                 Dispatcher.Invoke(() =>
                 {
-                    BFSmoveCountLabel.Text = $"BFS: {puzzleSolver.Solution.Count} moves";
+                    solution = new List<Move>();
+                    ReconstructPath(puzzleSolver);
+                    Print($"{solution.Count} moves\r{puzzleSolver.ElapsedTime} elapsed\rVisited {puzzleSolver.VisitedStates} states\r");
+                    PrintMoves();
+                    Print("===================\r");
+                    string sSearchType = searchType == PuzzleSolver.SearchType.BFS ? "BFS" : "A*";
+                    BFSmoveCountLabel.Text = $"{sSearchType}: {solution.Count} moves";
                     string elapsedTime = puzzleSolver.ElapsedTime.ToString();
                     elapsedTimeLabel.Text = $"Elapsed time:   {elapsedTime.Substring(3, Math.Min(13, elapsedTime.Length - 3))}";
-                    Print($"{puzzleSolver.Solution.Count} moves\r");
-                    Print($"{puzzleSolver.ElapsedTime} elapsed\r");
-                    Print($"Visited {puzzleSolver.VisitedStates} states\r");
-                    PrintMoves(puzzleSolver);
-                    Print("===================\r");
                 });
             };
 
             Action solvingAborted = () => {
-                Print("Aborted\r");
-                Print("===================\r");
+                Dispatcher.Invoke(() =>
+                {
+                    Print("Aborted\r");
+                    Print("===================\r");
+                });
             };
 
+            switch (searchType)
+            {
+                case PuzzleSolver.SearchType.BFS:
+                    puzzleSolver = new PuzzleSolverBFS(diskCount, pegCount);
+                    break;
+                case PuzzleSolver.SearchType.AStar:
+                    puzzleSolver = new PuzzleSolverAStar(diskCount, pegCount);
+                    break;
+                default:
+                    throw new Exception();
+                    break;
+            }
+            
             Print("Starting to solve...\r");
-            puzzleSolver.Start(startState, endState, solvingCompleted, solvingAborted);
+            puzzleSolver.Start(solvingCompleted, solvingAborted);
 
             ChangeFrameworkElementState(true, abortSolveButton);
+            canStartSolving = false;
             ChangeFrameworkElementState(false, startSolveButton, startVisualizationButton, abortVisualizationButton, resetVisualizationButton, diskCountInputTextBox, pegCountInputTextBox);
         }
 
         private void AbortSolveButton_Click(object sender, RoutedEventArgs e)
         {
             puzzleSolver.Abort();
+            canStartSolving = true;
             ChangeFrameworkElementState(true, startSolveButton, diskCountInputTextBox, pegCountInputTextBox);
             ChangeFrameworkElementState(false, abortSolveButton);
         }
@@ -80,28 +96,74 @@ namespace TowersOfHanoi
             {
                 diskCount = byte.Parse(diskCountInputTextBox.Text);
                 pegCount = byte.Parse(pegCountInputTextBox.Text);
+                if (pegCount < 3 || diskCount < 3 || diskCount > 15)
+                    throw new FormatException();
             }
             catch (FormatException)
             {
                 Console.WriteLine("Couldn't get disk and peg count!");
                 return;
             }
-            startState = new HanoiState(diskCount, pegCount, 0);
-            endState = new HanoiState(diskCount, pegCount, (byte)(pegCount - 1));
-            puzzleVisualizer.Init(startState, canvas);
+            canStartSolving = true;
+            puzzleVisualizer = new PuzzleVisualizer(canvas, diskCount, pegCount);
             FSmoveCountLabel.Text = $"Frame Stewart: - moves";
-            BFSmoveCountLabel.Text = $"BFS: - moves";
+            string sSearchType = searchType == PuzzleSolver.SearchType.BFS ? "BFS" : "A*";
+            BFSmoveCountLabel.Text = $"{sSearchType}: - moves";
             elapsedTimeLabel.Text = $"Elapsed time:   -";
             ChangeFrameworkElementState(true, startSolveButton);
             ChangeFrameworkElementState(false, abortSolveButton, startVisualizationButton, abortVisualizationButton, resetVisualizationButton);
         }
 
-        private void PrintMoves(PuzzleSolver puzzleSolver)
+        private void ReconstructPath(PuzzleSolver puzzleSolver)
         {
-            List<Move> solutionPath = puzzleSolver.Solution;
-            byte counter = 1;
+            HanoiNode currentNode = puzzleSolver.endNode;
+            while (currentNode.parent != null)
+            {
+                ulong tempState1 = currentNode.state;
+                ulong tempState2 = currentNode.parent != null ? currentNode.parent.state : 0;
+                for (int i = 0; i < diskCount; ++i)
+                {
+                    if (tempState1 % 10 != tempState2 % 10)
+                    {
+                        solution.Add(new Move((byte)(tempState2 % 10), (byte)(tempState1 % 10)));
+                    }
+                    tempState1 /= 10;
+                    tempState2 /= 10;
+                }
+                currentNode = currentNode.parent;
+            }
+            solution.Reverse();
+        }
+
+        private void PrintMoves()
+        {
+            uint counter = 1;
             Print("Solution:\r");
-            solutionPath.ForEach(move => { Print($"{move.from} --> {move.to}  [{counter++}]\r"); });
+            solution.ForEach(move => {
+                Print($"{move.from} --> {move.to}  [{counter++}]\r");
+            });
+        }
+
+        // setAStarButton - true, setBFSButton - false
+        private void SetBFSButton_Click(object sender, RoutedEventArgs e)
+        {
+            searchType = PuzzleSolver.SearchType.BFS;
+            string sSearchType = searchType == PuzzleSolver.SearchType.BFS ? "BFS" : "A*";
+            BFSmoveCountLabel.Text = $"{sSearchType}: - moves";
+            puzzleVisualizer = new PuzzleVisualizer(canvas, diskCount, pegCount);
+            ChangeFrameworkElementState(true, startSolveButton);
+            ChangeFrameworkElementState(false, abortSolveButton, startVisualizationButton, abortVisualizationButton, resetVisualizationButton);
+        }
+
+        // setAStarButton - false, setBFSButton - true
+        private void SetAStarButton_Click(object sender, RoutedEventArgs e)
+        {
+            searchType = PuzzleSolver.SearchType.AStar;
+            string sSearchType = searchType == PuzzleSolver.SearchType.BFS ? "BFS" : "A*";
+            BFSmoveCountLabel.Text = $"{sSearchType}: - moves";
+            puzzleVisualizer = new PuzzleVisualizer(canvas, diskCount, pegCount);
+            ChangeFrameworkElementState(true, startSolveButton);
+            ChangeFrameworkElementState(false, abortSolveButton, startVisualizationButton, abortVisualizationButton, resetVisualizationButton);
         }
 
         private void StartVisualizationButton_Click(object sender, RoutedEventArgs e)
@@ -110,9 +172,10 @@ namespace TowersOfHanoi
                 ChangeFrameworkElementState(true, resetVisualizationButton, diskCountInputTextBox, pegCountInputTextBox);
                 ChangeFrameworkElementState(false, abortVisualizationButton);
             };
-            if (puzzleVisualizer.StateEquals(startState))
+            if (puzzleVisualizer.currentState == 0)
             {
-                puzzleVisualizer?.Start(puzzleSolver.Solution, visualizationCompleted);
+                puzzleVisualizer = new PuzzleVisualizer(canvas, diskCount, pegCount);
+                puzzleVisualizer?.Start(solution, visualizationCompleted);
             }
             ChangeFrameworkElementState(true, abortVisualizationButton);
             ChangeFrameworkElementState(false, startSolveButton, startVisualizationButton, resetVisualizationButton, diskCountInputTextBox, pegCountInputTextBox);
@@ -129,7 +192,7 @@ namespace TowersOfHanoi
 
         private void ResetVisualizationButton_Click(object sender, RoutedEventArgs e)
         {
-            puzzleVisualizer.Init(startState, canvas);
+            puzzleVisualizer = new PuzzleVisualizer(canvas, diskCount, pegCount);
             ChangeFrameworkElementState(true, startVisualizationButton);
             ChangeFrameworkElementState(false, resetVisualizationButton);
         }

@@ -5,12 +5,16 @@ namespace TowersOfHanoi
 {
     class PuzzleSolverBFS : PuzzleSolver
     {
-        protected override List<Move> SolveThread(HanoiState startState, HanoiState endState, CancellationToken token)
+        public PuzzleSolverBFS(byte diskCount, byte pegCount) : base(diskCount, pegCount)
+        {
+        }
+
+        protected override void SolveThread(CancellationToken token)
         {
             //start Breadth-First Search
-            List<HanoiState> visitedStates = new List<HanoiState>();
+            HashSet<ulong> visitedStates = new HashSet<ulong>();
             Queue<HanoiNode> queue = new Queue<HanoiNode>();
-            HanoiNode endNode = null;
+
             queue.Enqueue(new HanoiNode(startState));
 
             while (queue.Count > 0)
@@ -29,28 +33,32 @@ namespace TowersOfHanoi
 
                 visitedStates.Add(node.state);
 
-                List<Move> possibleMoves = node.state.GetPossibleMoves();
-
-                foreach (Move possibleMove in possibleMoves)
+                for (byte i = 0; i < pegCount; ++i)
                 {
-                    HanoiState possibleState = new HanoiState(node.state, possibleMove);
-                    HanoiNode possibleNode = new HanoiNode(possibleState, node.path);
-                    possibleNode.path.Add(possibleMove);
-                    if (!visitedStates.Contains(possibleState))
+                    for (byte j = 0; j < pegCount; ++j)
                     {
-                        if (endState.Equals(possibleState))
+                        if (i == j)
+                            continue;
+                        ulong possibleState = HanoiOperations.Move(node.state, diskCount, i, j);
+                        if (node.state != possibleState)
                         {
-                            endNode = possibleNode;
-                            goto bfsEnd;
+                            if (!visitedStates.Contains(possibleState))
+                            {
+                                HanoiNode possibleNode = new HanoiNode(possibleState, ref node);
+                                if (endState.Equals(possibleState))
+                                {
+                                    endNode = possibleNode;
+                                    VisitedStates = visitedStates.Count;
+                                    return;
+                                }
+                                queue.Enqueue(possibleNode);
+                            }
                         }
-                        queue.Enqueue(possibleNode);
                     }
                 }
             }
 
-            bfsEnd: { }
             VisitedStates = visitedStates.Count;
-            return new List<Move>(endNode.path);
         }
     }
 }

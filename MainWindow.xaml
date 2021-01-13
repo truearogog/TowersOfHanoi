@@ -7,7 +7,7 @@
         xmlns:core="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Tower of Hanoi"
-        Height="600"
+        Height="650"
         Width="1000"
         Background="AliceBlue"
         ResizeMode="CanMinimize">
@@ -34,7 +34,6 @@
         </Style>
         <Style x:Key="NumberTextBox" BasedOn="{StaticResource Text}" TargetType="TextBox">
             <Setter Property="Width" Value="50"/>
-            <Setter Property="MaxLength" Value="1"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <EventSetter Event="PreviewTextInput" Handler="NumberTextBoxPreviewInput"/>
         </Style>
@@ -62,15 +61,29 @@
         <StackPanel Grid.Row="1" Grid.Column="1" Width="150" Orientation="Vertical">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
                 <Label Content="Disks" Margin="0,0,20,0" Style="{StaticResource Label}"/>
-                <TextBox x:Name="diskCountInputTextBox" TextChanged="PuzzleParametersChanged" Style="{StaticResource NumberTextBox}"/>
+                <TextBox x:Name="diskCountInputTextBox" TextChanged="PuzzleParametersChanged" Style="{StaticResource NumberTextBox}" MaxLength="2"/>
             </StackPanel>
+            
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
                 <Label Content="Pegs" Margin="0,0,20,0" Style="{StaticResource Label}"/>
-                <TextBox x:Name="pegCountInputTextBox" TextChanged="PuzzleParametersChanged" Style="{StaticResource NumberTextBox}"/>
+                <TextBox x:Name="pegCountInputTextBox" TextChanged="PuzzleParametersChanged" Style="{StaticResource NumberTextBox}" MaxLength="1"/>
             </StackPanel>
+            
+            <!--    
+            <DockPanel HorizontalAlignment="Center" Margin="0,0,0,10">
+                <Button x:Name="setBFSButton" Width="60" Click="SetBFSButton_Click" Margin="0,0,10,10">
+                    <TextBlock Text="BFS" Style="{StaticResource Text}" TextWrapping="Wrap"/>
+                </Button>
+                <Button x:Name="setAStarButton" Width="60" Click="SetAStarButton_Click" Margin="10,0,0,10">
+                    <TextBlock Text="A*" Style="{StaticResource Text}" TextWrapping="Wrap"/>
+                </Button>
+            </DockPanel>
+            -->
+            
             <Button x:Name="startSolveButton" Click="StartSolveButton_Clicked" Margin="0,0,0,10">
                 <TextBlock Text="Start" Style="{StaticResource Text}" TextWrapping="Wrap"/>
             </Button>
+            
             <Button x:Name="abortSolveButton" Click="AbortSolveButton_Click" Margin="0,0,0,10">
                 <TextBlock Text="Abort" Style="{StaticResource Text}" TextWrapping="Wrap"/>
             </Button>

@@ -58,9 +58,10 @@
     <Compile Include="Essentials.cs" />
     <Compile Include="FrameStewart.cs" />
     <Compile Include="HanoiNode.cs" />
-    <Compile Include="HanoiState.cs" />
-    <Compile Include="Peg.cs" />
+    <Compile Include="HanoiNodeValued.cs" />
+    <Compile Include="HanoiOperations.cs" />
     <Compile Include="PuzzleSolver.cs" />
+    <Compile Include="PuzzleSolverAStar.cs" />
     <Compile Include="PuzzleSolverBFS.cs" />
     <Compile Include="PuzzleVisualizer.cs" />
     <Page Include="MainWindow.xaml">

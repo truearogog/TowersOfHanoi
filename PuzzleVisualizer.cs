@@ -10,11 +10,15 @@ namespace TowersOfHanoi
 {
     class PuzzleVisualizer
     {
-        private HanoiState currentState;
-        private List<Move> moves;
+        private List<Move> moves = null;
         private Canvas canvas;
         private Dictionary<byte, Border> disks = new Dictionary<byte, Border>();
         private CancellationTokenSource tokenSource = null;
+
+        public ulong currentState { private set; get; } = 0;
+
+        private byte diskCount;
+        private byte pegCount;
 
         private double margin = 20d;
         private double maxDiscWidth;
@@ -23,49 +27,43 @@ namespace TowersOfHanoi
         private double pegOffsetX;
         private double pegOffsetY;
 
-        public void Init(HanoiState currentState, Canvas canvas)
+        public PuzzleVisualizer(Canvas canvas, byte diskCount, byte pegCount)
         {
-            this.currentState = currentState;
             this.canvas = canvas;
-            this.moves = null;
+            this.diskCount = diskCount;
+            this.pegCount = pegCount;
             CreateVisuals();
         }
 
         private void CreateVisuals()
         {
-            canvas.Dispatcher.Invoke(() => {
+            canvas.Parent.Dispatcher.Invoke(() => {
                 disks.Clear();
                 canvas.Children.Clear();
 
-                maxDiscWidth = canvas.ActualWidth / currentState.pegCount - margin;
+                maxDiscWidth = canvas.ActualWidth / pegCount - margin;
                 minDiscWidth = maxDiscWidth / 2;
-                diskHeight = (canvas.ActualHeight / 1.3d - 100d) / currentState.diskCount;
-                pegOffsetX = canvas.ActualWidth / currentState.pegCount;
+                diskHeight = (canvas.ActualHeight / 1.3d - 100d) / diskCount;
+                pegOffsetX = canvas.ActualWidth / pegCount;
                 pegOffsetY = canvas.ActualHeight;
 
-                for (byte pegIndex = 0; pegIndex < currentState.pegCount; pegIndex++)
+                //create disks
+                for (byte diskIndex = 0; diskIndex < diskCount; ++diskIndex)
                 {
-                    Peg peg = currentState[pegIndex];
-                    byte diskFromTop = 1;
-                    byte disksOnPeg = peg.Count();
+                    double diskWidth = Essentials.Lerp(minDiscWidth, maxDiscWidth, (double)diskIndex / diskCount);
+                    Color fillColor = Essentials.HSVtoRGB(255 * (diskIndex + 1) / (double)diskCount, 1, 1);
+                    Border diskRect = new Border() { Width = diskWidth, Height = diskHeight, Background = new SolidColorBrush(fillColor), BorderBrush = Brushes.Black, BorderThickness = new System.Windows.Thickness(3), CornerRadius = new System.Windows.CornerRadius(10d)};
+                    disks.Add(diskIndex, diskRect);
+                    canvas.Children.Add(diskRect);
+                    Canvas.SetLeft(diskRect, (pegOffsetX - diskWidth) / 2);
+                    Canvas.SetTop(diskRect, pegOffsetY - diskHeight * (diskCount - diskIndex) - margin / 2);
+                    Panel.SetZIndex(diskRect, 1);
+                }
 
-                    //create disks
-                    while (peg.CanPop())
-                    {
-                        byte diskValue = peg.Pop();
-                        double diskWidth = Essentials.Lerp(minDiscWidth, maxDiscWidth, (double)diskValue / disksOnPeg);
-                        Color fillColor = Essentials.HSVtoRGB(255 * (diskFromTop + 1) / (double)disksOnPeg, 1, 1);
-                        Border diskRect = new Border() { Width = diskWidth, Height = diskHeight, Background = new SolidColorBrush(fillColor), BorderBrush = Brushes.Black, BorderThickness = new System.Windows.Thickness(3), CornerRadius = new System.Windows.CornerRadius(30d)};
-                        disks.Add(diskValue, diskRect);
-                        canvas.Children.Add(diskRect);
-                        Canvas.SetLeft(diskRect, pegOffsetX * (pegIndex + 0.5d) - diskWidth / 2);
-                        Canvas.SetTop(diskRect, pegOffsetY - diskHeight * (disksOnPeg - diskFromTop + 1) - margin / 2);
-                        Panel.SetZIndex(diskRect, 1);
-                        diskFromTop++;
-                    }
-
-                    //create peg
-                    Rectangle pegRect = new Rectangle() { Width = 7, Height = canvas.ActualHeight / 1.5d, Fill = Brushes.Black, Stroke = Brushes.Black, StrokeThickness = 1};
+                //create pegs
+                for (byte pegIndex = 0; pegIndex < pegCount; ++pegIndex)
+                {
+                    Rectangle pegRect = new Rectangle() { Width = 7, Height = canvas.ActualHeight / 1.5d, Fill = Brushes.Black, Stroke = Brushes.Black, StrokeThickness = 1 };
                     canvas.Children.Add(pegRect);
                     Canvas.SetLeft(pegRect, pegOffsetX * (pegIndex + 0.5d) - pegRect.Width / 2);
                     Canvas.SetTop(pegRect, pegOffsetY - pegRect.Height - margin / 2);
@@ -107,11 +105,8 @@ namespace TowersOfHanoi
                 {
                     token.ThrowIfCancellationRequested();
                 }
-                Thread.Sleep(300);
-                if (currentState.CanMove(move.from, move.to))
-                {
-                    currentState = new HanoiState(currentState, move);
-                }
+                Thread.Sleep(500);
+                currentState = HanoiOperations.Move(currentState, diskCount, move.from, move.to);
                 VisualizeCurrentState();
             });
         }
@@ -119,18 +114,25 @@ namespace TowersOfHanoi
         private void VisualizeCurrentState()
         {
             canvas.Parent.Dispatcher.Invoke(() => {
-                for (byte pegIndex = 0; pegIndex < currentState.pegCount; pegIndex++)
+                ulong tempState = currentState;
+                byte[] disksPos = new byte[diskCount];
+                for (int i = 0; i < diskCount; ++i)
                 {
-                    Peg peg = currentState[pegIndex];
-                    byte diskFromTop = 1;
-                    byte disksOnPeg = peg.Count();
-                    while (peg.CanPop())
+                    disksPos[diskCount - i - 1] = (byte)(tempState % 10);
+                    tempState /= 10;
+                }
+
+                for (int pegIndex = 0; pegIndex < pegCount; ++pegIndex)
+                {
+                    byte diskHeight = 1;
+                    for (int i = 0; i < diskCount; ++i)
                     {
-                        byte diskValue = peg.Pop();
-                        Border disk = disks[diskValue];
-                        Canvas.SetLeft(disk, pegOffsetX * (pegIndex + 0.5d) - disk.Width / 2);
-                        Canvas.SetTop(disk, pegOffsetY - diskHeight * (disksOnPeg - diskFromTop + 1) - margin / 2);
-                        diskFromTop++;
+                        if (disksPos[diskCount - i - 1] == pegIndex)
+                        {
+                            Border disk = disks[(byte)(diskCount - i - 1)];
+                            Canvas.SetLeft(disk, pegOffsetX * (pegIndex + 0.5d) - disk.Width / 2);
+                            Canvas.SetTop(disk, pegOffsetY - (disk.Height * diskHeight++) - margin / 2);
+                        }
                     }
                 }
             });
@@ -140,11 +142,6 @@ namespace TowersOfHanoi
         {
             tokenSource.Cancel();
             completedAction?.Invoke();
-        }
-
-        public bool StateEquals(HanoiState state)
-        {
-            return state.Equals(currentState);
         }
     }
 }
