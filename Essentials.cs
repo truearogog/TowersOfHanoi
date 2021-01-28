@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Media;
 
 namespace TowersOfHanoi
@@ -115,14 +113,6 @@ namespace TowersOfHanoi
         public static byte Clamp(byte x, byte min, byte max)
         {
             return (x < min) ? min : (x > max) ? max : x;
-        }
-
-        public static void PrintList<T>(List<T> list)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("\n");
-            list.ForEach(a => sb.Append($"{a}\n"));
-            Console.Write(sb.ToString());
         }
     }
 }

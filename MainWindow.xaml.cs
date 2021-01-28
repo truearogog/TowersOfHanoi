@@ -9,7 +9,6 @@ namespace TowersOfHanoi
 {
     public partial class MainWindow : Window
     {
-        private PuzzleSolver.SearchType searchType = PuzzleSolver.SearchType.BFS;
         private List<Move> solution;
         private bool canStartSolving = false;
         private byte diskCount = 3;
@@ -46,8 +45,7 @@ namespace TowersOfHanoi
                     Print($"{solution.Count} moves\r{puzzleSolver.ElapsedTime} elapsed\rVisited {puzzleSolver.VisitedStates} states\r");
                     PrintMoves();
                     Print("===================\r");
-                    string sSearchType = searchType == PuzzleSolver.SearchType.BFS ? "BFS" : "A*";
-                    BFSmoveCountLabel.Text = $"{sSearchType}: {solution.Count} moves";
+                    BFSmoveCountLabel.Text = $"BFS: {solution.Count} moves";
                     string elapsedTime = puzzleSolver.ElapsedTime.ToString();
                     elapsedTimeLabel.Text = $"Elapsed time:   {elapsedTime.Substring(3, Math.Min(13, elapsedTime.Length - 3))}";
                 });
@@ -61,19 +59,7 @@ namespace TowersOfHanoi
                 });
             };
 
-            switch (searchType)
-            {
-                case PuzzleSolver.SearchType.BFS:
-                    puzzleSolver = new PuzzleSolverBFS(diskCount, pegCount);
-                    break;
-                case PuzzleSolver.SearchType.AStar:
-                    puzzleSolver = new PuzzleSolverAStar(diskCount, pegCount);
-                    break;
-                default:
-                    throw new Exception();
-                    break;
-            }
-            
+            puzzleSolver = new PuzzleSolverBFS(diskCount, pegCount);
             Print("Starting to solve...\r");
             puzzleSolver.Start(solvingCompleted, solvingAborted);
 
@@ -107,8 +93,7 @@ namespace TowersOfHanoi
             canStartSolving = true;
             puzzleVisualizer = new PuzzleVisualizer(canvas, diskCount, pegCount);
             FSmoveCountLabel.Text = $"Frame Stewart: - moves";
-            string sSearchType = searchType == PuzzleSolver.SearchType.BFS ? "BFS" : "A*";
-            BFSmoveCountLabel.Text = $"{sSearchType}: - moves";
+            BFSmoveCountLabel.Text = $"BFS: - moves";
             elapsedTimeLabel.Text = $"Elapsed time:   -";
             ChangeFrameworkElementState(true, startSolveButton);
             ChangeFrameworkElementState(false, abortSolveButton, startVisualizationButton, abortVisualizationButton, resetVisualizationButton);
@@ -141,29 +126,8 @@ namespace TowersOfHanoi
             Print("Solution:\r");
             solution.ForEach(move => {
                 Print($"{move.from} --> {move.to}  [{counter++}]\r");
+                Dispatcher.Invoke(() => { });
             });
-        }
-
-        // setAStarButton - true, setBFSButton - false
-        private void SetBFSButton_Click(object sender, RoutedEventArgs e)
-        {
-            searchType = PuzzleSolver.SearchType.BFS;
-            string sSearchType = searchType == PuzzleSolver.SearchType.BFS ? "BFS" : "A*";
-            BFSmoveCountLabel.Text = $"{sSearchType}: - moves";
-            puzzleVisualizer = new PuzzleVisualizer(canvas, diskCount, pegCount);
-            ChangeFrameworkElementState(true, startSolveButton);
-            ChangeFrameworkElementState(false, abortSolveButton, startVisualizationButton, abortVisualizationButton, resetVisualizationButton);
-        }
-
-        // setAStarButton - false, setBFSButton - true
-        private void SetAStarButton_Click(object sender, RoutedEventArgs e)
-        {
-            searchType = PuzzleSolver.SearchType.AStar;
-            string sSearchType = searchType == PuzzleSolver.SearchType.BFS ? "BFS" : "A*";
-            BFSmoveCountLabel.Text = $"{sSearchType}: - moves";
-            puzzleVisualizer = new PuzzleVisualizer(canvas, diskCount, pegCount);
-            ChangeFrameworkElementState(true, startSolveButton);
-            ChangeFrameworkElementState(false, abortSolveButton, startVisualizationButton, abortVisualizationButton, resetVisualizationButton);
         }
 
         private void StartVisualizationButton_Click(object sender, RoutedEventArgs e)
@@ -175,7 +139,7 @@ namespace TowersOfHanoi
             if (puzzleVisualizer.currentState == 0)
             {
                 puzzleVisualizer = new PuzzleVisualizer(canvas, diskCount, pegCount);
-                puzzleVisualizer?.Start(solution, visualizationCompleted);
+                puzzleVisualizer?.Start(solution, 200, visualizationCompleted);
             }
             ChangeFrameworkElementState(true, abortVisualizationButton);
             ChangeFrameworkElementState(false, startSolveButton, startVisualizationButton, resetVisualizationButton, diskCountInputTextBox, pegCountInputTextBox);
@@ -200,6 +164,11 @@ namespace TowersOfHanoi
         public void Print(string message)
         {
             consoleTextBox.AppendText(message);
+        }
+
+        private void ClearConsoleButton_Click(object sender, RoutedEventArgs e)
+        {
+            consoleTextBox.Document.Blocks.Clear();
         }
 
         private void ChangeFrameworkElementState(params FrameworkElement[] frameworkElements)

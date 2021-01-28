@@ -7,7 +7,7 @@
         xmlns:core="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Tower of Hanoi"
-        Height="650"
+        Height="670"
         Width="1000"
         Background="AliceBlue"
         ResizeMode="CanMinimize">
@@ -63,23 +63,12 @@
                 <Label Content="Disks" Margin="0,0,20,0" Style="{StaticResource Label}"/>
                 <TextBox x:Name="diskCountInputTextBox" TextChanged="PuzzleParametersChanged" Style="{StaticResource NumberTextBox}" MaxLength="2"/>
             </StackPanel>
-            
+
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
                 <Label Content="Pegs" Margin="0,0,20,0" Style="{StaticResource Label}"/>
                 <TextBox x:Name="pegCountInputTextBox" TextChanged="PuzzleParametersChanged" Style="{StaticResource NumberTextBox}" MaxLength="1"/>
             </StackPanel>
-            
-            <!--    
-            <DockPanel HorizontalAlignment="Center" Margin="0,0,0,10">
-                <Button x:Name="setBFSButton" Width="60" Click="SetBFSButton_Click" Margin="0,0,10,10">
-                    <TextBlock Text="BFS" Style="{StaticResource Text}" TextWrapping="Wrap"/>
-                </Button>
-                <Button x:Name="setAStarButton" Width="60" Click="SetAStarButton_Click" Margin="10,0,0,10">
-                    <TextBlock Text="A*" Style="{StaticResource Text}" TextWrapping="Wrap"/>
-                </Button>
-            </DockPanel>
-            -->
-            
+
             <Button x:Name="startSolveButton" Click="StartSolveButton_Clicked" Margin="0,0,0,10">
                 <TextBlock Text="Start" Style="{StaticResource Text}" TextWrapping="Wrap"/>
             </Button>
@@ -91,22 +80,27 @@
             <TextBlock x:Name="FSmoveCountLabel" Text="Frame Stewart: - moves" TextWrapping="Wrap" Style="{StaticResource Text}" Margin="0,0,0,10"/>
             <TextBlock x:Name="BFSmoveCountLabel" Text="BFS: - moves" TextWrapping="Wrap" Style="{StaticResource Text}" Margin="0,0,0,10"/>
             <TextBlock x:Name="elapsedTimeLabel" Text="Elapsed time:   -" TextWrapping="Wrap" Style="{StaticResource Text}" Margin="0,0,0,10"/>
-            
+
+            <TextBlock Text="Visualization" TextWrapping="Wrap" HorizontalAlignment="Center" Style="{StaticResource Text}" Margin="0,0,0,10"/>
             <Button x:Name="startVisualizationButton" Click="StartVisualizationButton_Click" Margin="0,0,0,10">
-                <TextBlock Text="Start vis" Style="{StaticResource Text}" TextWrapping="Wrap"/>
+                <TextBlock Text="Start" Style="{StaticResource Text}" TextWrapping="Wrap"/>
             </Button>
             <Button x:Name="abortVisualizationButton" Click="AbortVisualizationButton_Click" Margin="0,0,0,10">
-                <TextBlock Text="Abort vis" Style="{StaticResource Text}" TextWrapping="Wrap"/>
+                <TextBlock Text="Abort" Style="{StaticResource Text}" TextWrapping="Wrap"/>
             </Button>
             <Button x:Name="resetVisualizationButton" Click="ResetVisualizationButton_Click" Margin="0,0,0,10">
-                <TextBlock Text="Reset vis" Style="{StaticResource Text}" TextWrapping="Wrap"/>
+                <TextBlock Text="Reset" Style="{StaticResource Text}" TextWrapping="Wrap"/>
             </Button>
         </StackPanel>
 
         <Canvas x:Name="canvas" Grid.Row="1" Grid.Column="3" Background="White"/>
 
-        <RichTextBox x:Name="consoleTextBox" Grid.Row="1" Grid.Column="5" Width="190" IsReadOnly="True" VerticalScrollBarVisibility="Visible">
-        </RichTextBox>
+        <StackPanel Grid.Row="1" Grid.Column="5" Width="190" Orientation="Vertical">
+            <RichTextBox x:Name="consoleTextBox" Grid.Row="1" Grid.Column="5" Height="560" IsReadOnly="True" VerticalScrollBarVisibility="Visible"/>
+            <Button x:Name="clearConsoleButton" Width="150" Click="ClearConsoleButton_Click" Margin="0,10,0,0">
+                <TextBlock Text="Clear" Style="{StaticResource Text}" TextWrapping="Wrap"/>
+            </Button>
+        </StackPanel>
         <!--#endregion-->
 
         <!--#region GRID SPLITTERS-->

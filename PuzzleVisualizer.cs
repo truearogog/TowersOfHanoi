@@ -72,7 +72,7 @@ namespace TowersOfHanoi
             });
         }
 
-        public async void Start(List<Move> moves, Action completedAction = null)
+        public async void Start(List<Move> moves, int deltaTime, Action completedAction = null)
         {
             if (moves == null)
                 return;
@@ -84,7 +84,7 @@ namespace TowersOfHanoi
                 try
                 {
                     this.moves = moves;
-                    VisualizationThread(token);
+                    VisualizationThread(deltaTime, token);
                     completedAction?.Invoke();
                 }
                 catch (OperationCanceledException)
@@ -98,14 +98,14 @@ namespace TowersOfHanoi
             });
         }
 
-        private void VisualizationThread(CancellationToken token)
+        private void VisualizationThread(int deltaTime, CancellationToken token)
         {
             moves.ForEach(move => {
                 if (token.IsCancellationRequested)
                 {
                     token.ThrowIfCancellationRequested();
                 }
-                Thread.Sleep(500);
+                Thread.Sleep(deltaTime);
                 currentState = HanoiOperations.Move(currentState, diskCount, move.from, move.to);
                 VisualizeCurrentState();
             });

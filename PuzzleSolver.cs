@@ -6,7 +6,6 @@ namespace TowersOfHanoi
 {
     abstract class PuzzleSolver
     {
-        public enum SearchType { BFS, AStar }
         public TimeSpan ElapsedTime { private set; get; }
         public long VisitedStates { protected set; get; }
         private CancellationTokenSource tokenSource = null;

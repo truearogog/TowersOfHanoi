@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
+using System.Collections.Generic;
 
 namespace TowersOfHanoi
 {
@@ -45,10 +45,11 @@ namespace TowersOfHanoi
                             if (!visitedStates.Contains(possibleState))
                             {
                                 HanoiNode possibleNode = new HanoiNode(possibleState, ref node);
-                                if (endState.Equals(possibleState))
+                                if (endState == possibleState)
                                 {
                                     endNode = possibleNode;
                                     VisitedStates = visitedStates.Count;
+                                    visitedStates.GetEnumerator().Dispose();
                                     return;
                                 }
                                 queue.Enqueue(possibleNode);
@@ -59,6 +60,7 @@ namespace TowersOfHanoi
             }
 
             VisitedStates = visitedStates.Count;
+            visitedStates.GetEnumerator().Dispose();
         }
     }
 }
